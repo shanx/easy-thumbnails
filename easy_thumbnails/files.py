@@ -1,5 +1,6 @@
 import os
 import six
+import time
 
 from django.core.files.base import File, ContentFile
 from django.core.files.storage import (
@@ -498,8 +499,8 @@ class Thumbnailer(File):
 
     def get_source_modtime(self):
         try:
-            path = self.source_storage.path(self.name)
-            return os.path.getmtime(path)
+            modified_time = self.source_storage.modified_time(self.name)
+            return time.mktime(modified_time.timetuple())
         except OSError:
             return 0
         except NotImplementedError:
@@ -507,8 +508,8 @@ class Thumbnailer(File):
 
     def get_thumbnail_modtime(self, thumbnail_name):
         try:
-            path = self.thumbnail_storage.path(thumbnail_name)
-            return os.path.getmtime(path)
+            modified_time = self.thumbnail_storage.modified_time(thumbnail_name)
+            return time.mktime(modified_time.timetuple())
         except OSError:
             return 0
         except NotImplementedError:
